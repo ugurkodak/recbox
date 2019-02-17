@@ -1,90 +1,87 @@
-# NOTE
-
-# MODELS
-# Field
-# Template
-# Item
-# List
-
-# RELATIONS
-# A field is a text
-# A template can have multiple fields
-# A item can have multiple templates
-# A list can have multiple items
-
 import os
 import json
 import uuid
 
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__)) + "/../"
 ARCHIVE_DIR = ROOT_DIR + ".archive"
-DATA_DIR = ROOT_DIR + ".archive/.data"
-MEDIA_DIR = ROOT_DIR + ".archive/.media"
-CONFIG_FILE = ROOT_DIR + ".archive/config.json"
+DATA_DIR = ROOT_DIR + ".archive/data"
+MEDIA_DIR = ROOT_DIR + ".archive/media"
+CONFIG_FILE = ROOT_DIR + ".archive/data/config.json"
+FIELDS_FILE = ROOT_DIR + ".archive/data/fields.json"
+TEMPLATES_FILE = ROOT_DIR + ".archive/data/templates.json"
+LISTS_FILE = ROOT_DIR + ".archive/data/lists.json"
 
 
 class Data:
-    config = {}
-    fields = {}
-    templates = {}
-    lists = {}
+    config = []
+    fields = []
+    templates = []
+    lists = []
 
     def __init__(self):
-        self.load()
-        print(self.config)
+        self.__load_archive()
 
-    def create(self):
+    def __create_archive(self):
+        # Quit program if archive exists
         if os.path.isdir(ARCHIVE_DIR):
-            print("Error: Old archive directory found while "
-                  "trying to create a new archive.")
-            input("Press any key to close...")
+            input("Error: Old archive directory found while "
+                  "creating a new archive. Session will be terminated.\n"
+                  "Press any key to close...")
             exit()
         else:
+            # Create archive directories
             os.mkdir(ARCHIVE_DIR)
             os.mkdir(DATA_DIR)
             os.mkdir(MEDIA_DIR)
-            open(CONFIG_FILE, "x")
-            # TODO Write a default config file
+
+            # Create data files with default JSON objects
+            with open(CONFIG_FILE, "w") as fp:
+                json.dump([], fp)  # TODO Default configuration
+            with open(FIELDS_FILE, "w") as fp:
+                json.dump([], fp)
+            with open(TEMPLATES_FILE, "w") as fp:
+                json.dump([], fp)
+            with open(LISTS_FILE, "w") as fp:
+                json.dump([], fp)
+
             print("Info: New archive created.")
 
-    def load(self):
+            self.__load_archive()
+
+    def __load_archive(self):
+        # Create archive if first use
         if not os.path.isdir(ARCHIVE_DIR):
-            self.create()
+            self.__create_archive()
         else:
-            with open(CONFIG_FILE, "r") as f:
-                self.config = json.load(f)
-                # TODO Load archive data
+            # Load data files as arrays of dictionaries
+            with open(CONFIG_FILE, "r") as fp:
+                self.config = json.load(fp)
+            with open(FIELDS_FILE, "r") as fp:
+                self.fields = json.load(fp)
+            with open(TEMPLATES_FILE, "r") as fp:
+                self.templates = json.load(fp)
+            with open(LISTS_FILE, "r") as fp:
+                self.lists = json.load(fp)
 
+            print("Info: Archive loaded.")
 
-class FieldData:
-    id = None
-    name = None
-    description = None
-    __dict = None
+    def create_field(self, name, description):
+        # Set new field properties
+        new = {}
+        new["id"] = str(uuid.uuid4())
+        new["name"] = name
+        new["description"] = description
 
-    def __init__(self, name, description, id=None):
-        self.id = id if id is not None else uuid.uuid4()
-        self.name = name
-        self.description = description
-        self.__dict = {
-            "id": self.id,
-            "name": name,
-            "description": description
-        }
+        # Update memory
+        self.fields.append(new)
+        print("Info: New field created.")
 
-    @classmethod
-    def fromJSON(self, jsonString):  # TODO: is it correct to put self here?
-        dic = json.loads(jsonString)
-        if (not dic.get("id")
-                or not dic.get("name")
-                or not dic.get("description")
-                or dic["id"] == ""
-                or dic["name"] == ""
-                or dic["description"] == ""):
-            print("Error: Invalid json object for field")
-            return None
-        else:
-            return FieldData(dic["name"], dic["description"], dic["id"])
+        # Return reference to new field
+        return self.fields[-1]
 
-    def toJSON(self):
-        return json.dumps(self.__dict)
+    def update(self):
+        # Update fields file
+        with open(FIELDS_FILE, "w") as fp:
+            json.dump(self.fields, fp, indent=2)
+
+        print("Info: Files updated.")
