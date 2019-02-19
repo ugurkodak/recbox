@@ -90,9 +90,9 @@ class Data:
 
         return self.fields[-1]  # Return reference to new field
 
-    def update(self):
-        # Update fields file
-        with open(FIELDS_FILE, "w") as fp:
-            json.dump(self.fields, fp, indent=2)
-
-        print("Info: Files updated.")
+    def update_files(self, *files):
+        for f in files:
+            if (f == "fields"):
+                with open(FIELDS_FILE, "w") as fp:
+                    json.dump(self.fields, fp, indent=2)
+                print("Info: Fields file updated.")
