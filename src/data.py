@@ -21,6 +21,18 @@ class Data:
     def __init__(self):
         self.__load_archive()
 
+        # # Create test fields
+        # for i in range(200):
+        #     (self.create_field(
+        #         "Test Field Name" + str(i), "Short field description")
+        #      if i % 2 == 0
+        #      else self.create_field(
+        #         "Test Field Name" + str(i), "This is a pretty long field "
+        #         "description to test ui layout. Lorem all the ipsums and "
+        #         "don't dolor, because a little sit and a little amet "
+        #         "don't hurt anyone."))
+        # self.update()
+
     def __create_archive(self):
         # Quit program if archive exists
         if os.path.isdir(ARCHIVE_DIR):
@@ -71,13 +83,12 @@ class Data:
         new["id"] = str(uuid.uuid4())
         new["name"] = name
         new["description"] = description
+        # TODO date
 
-        # Update memory
-        self.fields.append(new)
+        self.fields.append(new)  # Update memory
         print("Info: New field created.")
 
-        # Return reference to new field
-        return self.fields[-1]
+        return self.fields[-1]  # Return reference to new field
 
     def update(self):
         # Update fields file

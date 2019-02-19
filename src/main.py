@@ -1,10 +1,3 @@
-from data import Data
-# from ui import UI
-# from pprint import pprint
+from ui import UI
 
-# UI(Data()).mainloop()
-
-data = Data()
-# data.create_field("Title", "The title of a work")
-data.fields[0]["description"] = "Edited description"
-data.update()
+UI().mainloop()
