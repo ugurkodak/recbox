@@ -90,6 +90,13 @@ class Data:
 
         return self.fields[-1]  # Return reference to new field
 
+    def delete_fields(self, fieldIdList):
+        for i in fieldIdList:
+            for field in self.fields:
+                if field["id"] == i:
+                    self.fields.remove(field)
+                    print("Info: Field deleted. (" + field["name"] + ")")
+
     def update_files(self, *files):
         for f in files:
             if (f == "fields"):
